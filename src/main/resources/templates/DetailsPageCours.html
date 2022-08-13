@@ -1,0 +1,39 @@
+<!DOCTYPE>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/LayoutPage}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" xmlns="http://www.w3.org/1999/html">
+<div layout:fragment="Content" class="container">
+      <div class="mx-auto" th:if="${cours != null}">
+          <h5 class="card-title" >Название <span th:text="${cours.name}"></span> </h5>
+          <h6 class ="card-subtitle mb-2 text-muted">Рэйтинг <span th:text="${cours.rating}"></span></h6>
+          <h6 class="card-subtitle mb-2 text-muted" >Прайс <span th:text="${cours.price}"></span></h6>
+          <p class="card-text">Описание <span th:text="${cours.description}"></span></p>
+          <p class="card-text">Имя автора <span th:text="${cours.author.fullName}"></span></p>
+          <p class="card-text" th:each="kurs:${cours.category}" th:text="${kurs.name}"></p>
+          <button sec:authorize="hasAnyRole('ROLE_ADMIN')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              Удалить</button>
+      </div>
+
+    <div class="modal" tabindex="-1" id="exampleModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="exampleModalLabel" class="modal-title">Удаление Курс</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                    <div class="modal-body">
+                        <label>Удалить?</label>
+                    </div>
+                <form th:action="@{'/deletCours'}" method="post">
+                    <div class="modal-footer">
+                        <input hidden name="id" th:value="${cours.id}">
+                        <button type="button" class="btn btn-secondary" >Нет</button>
+                        <button type="submit" class="btn btn-primary"
+                                >Да</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

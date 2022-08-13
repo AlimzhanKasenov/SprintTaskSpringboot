@@ -1,0 +1,77 @@
+<!DOCTYPE>
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/LayoutPage}"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" xmlns="http://www.w3.org/1999/html">
+
+<div layout:fragment="Content" class="container">
+  <button class="mx-auto my-3" type="button" sec:authorize="hasAnyRole('ROLE_ADMIN')" data-bs-toggle="modal"
+          data-bs-target="#exampleModal">Добавить</button>
+  <div class="row">
+      <div class="card  col-sm m-3" style="width: 18rem;" th:each="cours : ${courses}">
+        <input hidden th:value="${cours.id}">
+        <div class="card-body">
+          <h5 class="card-title" th:text="${cours.name}"></h5>
+          <h6 class ="card-subtitle mb-2 text-muted" th:text="${cours.rating}"></h6>
+          <h6 class="card-subtitle mb-2 text-muted" th:text="${cours.price}"></h6>
+          <p class="card-text" th:text="${cours.description}"></p>
+          <a th:href="@{'/getCourcById/' + ${cours.id}}" class="card-link">Details</a>
+        </div>
+        </div>
+      </div>
+
+<div class="modal" tabindex="-1" id="exampleModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="exampleModalLabel" class="modal-title">Добавить Курс</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form th:action="@{'/addCours'}"method="post">
+      <div class="modal-body">
+        <label>Name</label>
+        <input type="text" class="form-control" name="name">
+        <label>Description</label>
+        <input type="text" class="form-control" name="description">
+        <label>Price</label>
+        <input type="text" class="form-control" name="price">
+        <label>Rating</label>
+        <input type="text" class="form-control" name="rating">
+        <label>Category</label>
+        <select class="form-select" name="category">
+          <option th:each="cours:${coursModal}" th:value="${cours.id}" th:text="${cours.name}"></option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="text/javascript">
+  function loadCours(){
+    const xhttp = new XMLHttpRequest();
+    xhttp.onload=function (){
+      const result=this.responseText;
+      var coursList=JSON.parse(result);
+      var htmlCode = "";
+      for (i=0; i<coursList.length; i++){
+        htmlCode+="<input hidden>" + coursList[i]["id"];
+        htmlCode+="<div class='card-body'>"
+        htmlCode+="<h5 class='card-title'>" + coursList[i]["name"] + "</h5>"
+        htmlCode+="<h6 class='card-subtitle mb-2 text-muted'>" + coursList[i]["description"] + "</h6>";
+        htmlCode+="<h6 class='card-subtitle mb-2 text-muted'>" + coursList[i]["price"] + "</h6>";
+        htmlCode+="<p class='card-text'>" + coursList[i]["rating"] + "</p>";
+        htmlCode+="<a href='/details/'"+ coursList[i].id + " class='card-link'>Details</a>";
+        htmlCode+="</div>"
+      }
+      document.getElementById("course").innerHTML=htmlCode;
+    }
+    xhttp.open("GET", "http://localhost:8080/api/cours");
+    xhttp.send();
+  }
+</script>
+</html>
